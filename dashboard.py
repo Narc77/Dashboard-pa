@@ -36,18 +36,18 @@ taxa_adm = st.sidebar.number_input(
 ) / 100
 
 
-despesas = st.sidebar.number_input(
-    "Despesas (%)",
+fee_rate = st.sidebar.number_input(
+    "Taxa de performance (%)",
     min_value=0.0,
-    max_value=5.0,
-    value=0.10,
-    step=0.01,
+    max_value=50.0,
+    value=20.0,
+    step=0.1,
     format="%.2f"
 ) / 100
 
 
 st.sidebar.markdown("---")
-st.sidebar.markdown(f"**Total de Custos Anuais:** {(taxa_adm + despesas)*100:.2f}%")
+st.sidebar.markdown(f"**Total de Custos Anuais:** {(taxa_adm)*100:.2f}%")
 
 
 # ===========================
@@ -56,7 +56,7 @@ st.sidebar.markdown(f"**Total de Custos Anuais:** {(taxa_adm + despesas)*100:.2f
 @st.cache_data
 def load_data():
     try:
-        benchmarks = pd.read_excel('indices.xlsx').set_index('Date')
+        benchmarks = pd.read_excel('Indices.xlsx').set_index('Date')
         benchmarks.index = pd.to_datetime(benchmarks.index)
         return benchmarks
     except:
@@ -98,10 +98,10 @@ anos_fechamento = list(range(2014, 2026))
 # ===========================
 # CALCULAR COTA COM TAXAS
 # ===========================
-def calcular_cota_com_taxas(retornos_anuais, taxa_adm, despesas):
-    """Calcula a cota aplicando taxas de administração e despesas"""
+def calcular_cota_com_taxas(retornos_anuais, taxa_adm):
+    """Calcula a cota aplicando taxas de administração"""
     cota = [1.0]
-    custo_total_anual = taxa_adm + despesas
+    custo_total_anual = taxa_adm
     
     for ret_pct in retornos_anuais:
         # Aplica retorno e desconta custos fixos
@@ -111,7 +111,7 @@ def calcular_cota_com_taxas(retornos_anuais, taxa_adm, despesas):
     return cota
 
 
-cota_fechamento_anual_acumulada = calcular_cota_com_taxas(total_anual, taxa_adm, despesas)
+cota_fechamento_anual_acumulada = calcular_cota_com_taxas(total_anual, taxa_adm)
 cota_series_precos = pd.Series(cota_fechamento_anual_acumulada, index=anos_fechamento)
 cota_series_precos.index.name = "Ano"
 
@@ -157,7 +157,7 @@ has_positive_outperformance = (positive_outperformance_selected > 0)
 paga_taxa_selected = has_positive_outperformance & is_above_hwm
 
 # Taxa de performance
-fee_rate = 0.20
+#fee_rate = 0.20
 fee_base_selected = positive_outperformance_selected.where(is_above_hwm, 0)
 performance_fee_selected = (fee_base_selected * fee_rate).dropna()
 
@@ -346,14 +346,3 @@ fig_acumulado.update_layout(height=500)
 st.plotly_chart(fig_acumulado, use_container_width=True)
 
 
-# ===========================
-# RODAPÉ
-# ===========================
-st.markdown("---")
-st.markdown(f"""
-**Notas:**
-- A cota já incorpora taxa de administração e despesas
-- Taxa de performance(20%) é cobrada quando:
-  1. Cota tem outperformance POSITIVO vs {selected_benchmark}
-  2. E a cota está acima do High Watermark (HWM)
-""")
