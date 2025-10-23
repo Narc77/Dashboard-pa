@@ -56,7 +56,7 @@ st.sidebar.markdown(f"**Total de Custos Anuais:** {(taxa_adm + despesas)*100:.2f
 @st.cache_data
 def load_data():
     try:
-        benchmarks = pd.read_excel('indices.xlsx').set_index('Date')
+        benchmarks = pd.read_excel('Indices.xlsx').set_index('Date')
         benchmarks.index = pd.to_datetime(benchmarks.index)
         return benchmarks
     except:
