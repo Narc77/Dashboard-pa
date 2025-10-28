@@ -5,9 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-# ===========================
-# CONFIGURAÇÃO DA PÁGINA
-# ===========================
+
 st.set_page_config(
     page_title="Dashboard de Performance do Fundo",
     layout="wide",
@@ -18,9 +16,7 @@ st.title("Dashboard de Performance do Fundo")
 st.markdown("---")
 
 
-# ===========================
-# SIDEBAR - PARÂMETROS
-# ===========================
+
 st.sidebar.header("Parâmetros do Fundo")
 
 taxa_adm = st.sidebar.number_input(
@@ -42,9 +38,7 @@ fee_rate = st.sidebar.number_input(
 ) / 100
 
 
-# ===========================
-# CARREGAR DADOS
-# ===========================
+
 @st.cache_data
 def load_data():
     benchmarks = pd.read_excel('Indices.xlsx').set_index('Date')
@@ -57,9 +51,6 @@ if benchmarks is None:
     st.stop()
 
 
-# ===========================
-# SIDEBAR - SELEÇÃO DE BENCHMARK
-# ===========================
 st.sidebar.markdown("---")
 st.sidebar.header("Benchmark para Taxa de Performance")
 
@@ -72,9 +63,7 @@ selected_benchmark = st.sidebar.selectbox(
 
 
 
-# ===========================
-# PROCESSAR BENCHMARKS
-# ===========================
+
 yearly_prices_benchmarks = benchmarks.resample('YE').last()
 yearly_prices_benchmarks.index = yearly_prices_benchmarks.index.year
 yearly_prices_benchmarks.index.name = "Ano"
@@ -84,9 +73,7 @@ benchmark_selected_prices = yearly_prices_benchmarks[selected_benchmark]
 benchmark_returns_selected = benchmark_returns_pct[selected_benchmark]
 
 
-# ===========================
-# DADOS DO FUNDO
-# ===========================
+
 total_anual = [
     -3.42, 5.21, 22.63, -16.70, 78.43, 153.09, 10.43,
     -34.31, 51.86, 29.04, 21.02
@@ -94,9 +81,7 @@ total_anual = [
 anos_fechamento = list(range(2014, 2026))
 
 
-# ===========================
-# CALCULAR COTA SEM TAXA DE PERFORMANCE (só ADM)
-# ===========================
+
 def calcular_cota_sem_performance(retornos_anuais, taxa_adm):
     """Calcula a cota aplicando apenas taxa de administração"""
     anos = list(range(2014, 2014 + len(retornos_anuais) + 1))
@@ -114,9 +99,7 @@ cota_sem_perf_series = pd.Series(cota_sem_performance, index=anos_sem_perf)
 cota_sem_perf_series.index.name = "Ano"
 
 
-# ===========================
-# CALCULAR COTA COM TAXA DE PERFORMANCE
-# ===========================
+
 def calcular_cota_completa(retornos_anuais, benchmark_returns, taxa_adm, fee_rate):
     """Calcula a cota aplicando todas as taxas, incluindo taxa de performance"""
     anos = list(range(2014, 2014 + len(retornos_anuais) + 1))
@@ -183,9 +166,7 @@ paga_taxa_series = pd.Series(resultado['paga_taxa'], index=resultado['anos'])
 cota_returns_pct = cota_com_perf_series.pct_change()
 
 
-# ===========================
-# MÉTRICAS PRINCIPAIS
-# ===========================
+
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -219,9 +200,7 @@ with col4:
 st.markdown("---")
 
 
-# ===========================
-# GRÁFICO 1: COTA SEM TAXA DE PERFORMANCE
-# ===========================
+
 st.subheader("Gráfico 1: Cota (apenas com Taxa ADM)")
 
 
@@ -247,9 +226,7 @@ fig_sem_perf.update_layout(
 st.plotly_chart(fig_sem_perf, use_container_width=True)
 
 
-# ===========================
-# GRÁFICO 2: COTA VS BENCHMARK (COM TAXA DE PERFORMANCE)
-# ===========================
+
 st.subheader(f"Gráfico 2: Taxa de Performance - Cota vs {selected_benchmark}")
 st.caption(f"Esta cota inclui taxa ADM + taxa de performance calculada sobre o outperformance vs {selected_benchmark}")
 
@@ -302,7 +279,7 @@ fig_perf.update_layout(
 
 st.plotly_chart(fig_perf, use_container_width=True)
 
-# Info sobre taxa
+
 col1, col2, col3 = st.columns(3)
 with col1:
     anos_taxa = paga_taxa_series.sum()
@@ -317,10 +294,8 @@ with col3:
         st.metric("Taxa Média/Ano", "0.0000")
 
 
-# ===========================
-# TABELA: DETALHAMENTO ANUAL
-# ===========================
-st.subheader("📋 Detalhamento Anual")
+
+st.subheader("Detalhamento Anual")
 
 df_detalhe = pd.DataFrame({
     'Ano': resultado['anos'][1:],
@@ -349,11 +324,8 @@ st.dataframe(
 )
 
 
-# ===========================
-# GRÁFICO 3: RETORNO ACUMULADO (SEM TAXA DE PERFORMANCE)
-# ===========================
 st.subheader("Gráfico 3: Retorno Acumulado")
-st.caption("Cota SEM taxa de performance para comparação justa com benchmarks (que não têm taxa de performance)")
+
 
 base_prices_benchmarks = yearly_prices_benchmarks.iloc[0]
 normalized_benchmarks = yearly_prices_benchmarks / base_prices_benchmarks
@@ -388,9 +360,7 @@ fig_acumulado.update_layout(height=500)
 st.plotly_chart(fig_acumulado, use_container_width=True)
 
 
-# ===========================
-# COMPARAÇÃO FINAL
-# ===========================
+
 st.markdown("---")
 st.subheader("Comparação: Impacto da Taxa de Performance")
 
