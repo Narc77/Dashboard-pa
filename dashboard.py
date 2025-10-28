@@ -14,14 +14,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.title("📊 Dashboard de Performance do Fundo")
+st.title("Dashboard de Performance do Fundo")
 st.markdown("---")
 
 
 # ===========================
 # SIDEBAR - PARÂMETROS
 # ===========================
-st.sidebar.header("⚙️ Parâmetros do Fundo")
+st.sidebar.header("Parâmetros do Fundo")
 
 taxa_adm = st.sidebar.number_input(
     "Taxa de Administração (%)",
@@ -61,7 +61,7 @@ if benchmarks is None:
 # SIDEBAR - SELEÇÃO DE BENCHMARK
 # ===========================
 st.sidebar.markdown("---")
-st.sidebar.header("📊 Benchmark para Taxa de Performance")
+st.sidebar.header("Benchmark para Taxa de Performance")
 
 benchmark_options = list(benchmarks.columns)
 selected_benchmark = st.sidebar.selectbox(
@@ -70,15 +70,6 @@ selected_benchmark = st.sidebar.selectbox(
     index=0 if len(benchmark_options) > 0 else None
 )
 
-# AVISO IMPORTANTE
-st.sidebar.warning(f"""
-⚠️ **IMPORTANTE:**  
-A taxa de performance (Gráfico 2) é calculada usando **{selected_benchmark}** como referência.
-
-**Gráfico 1**: Cota com apenas taxa ADM  
-**Gráfico 2**: Cota com taxa ADM + Performance (vs {selected_benchmark})  
-**Gráfico 3**: Cota sem taxa de performance (comparação justa)
-""")
 
 
 # ===========================
@@ -231,7 +222,7 @@ st.markdown("---")
 # ===========================
 # GRÁFICO 1: COTA SEM TAXA DE PERFORMANCE
 # ===========================
-st.subheader("📈 Gráfico 1: Cota (apenas com Taxa ADM)")
+st.subheader("Gráfico 1: Cota (apenas com Taxa ADM)")
 
 
 fig_sem_perf = go.Figure()
@@ -259,7 +250,7 @@ st.plotly_chart(fig_sem_perf, use_container_width=True)
 # ===========================
 # GRÁFICO 2: COTA VS BENCHMARK (COM TAXA DE PERFORMANCE)
 # ===========================
-st.subheader(f"💰 Gráfico 2: Taxa de Performance - Cota vs {selected_benchmark}")
+st.subheader(f"Gráfico 2: Taxa de Performance - Cota vs {selected_benchmark}")
 st.caption(f"Esta cota inclui taxa ADM + taxa de performance calculada sobre o outperformance vs {selected_benchmark}")
 
 benchmark_normalized = benchmark_selected_prices / benchmark_selected_prices.iloc[0]
@@ -361,7 +352,7 @@ st.dataframe(
 # ===========================
 # GRÁFICO 3: RETORNO ACUMULADO (SEM TAXA DE PERFORMANCE)
 # ===========================
-st.subheader("📈 Gráfico 3: Retorno Acumulado - Comparação Justa")
+st.subheader("Gráfico 3: Retorno Acumulado")
 st.caption("Cota SEM taxa de performance para comparação justa com benchmarks (que não têm taxa de performance)")
 
 base_prices_benchmarks = yearly_prices_benchmarks.iloc[0]
@@ -401,7 +392,7 @@ st.plotly_chart(fig_acumulado, use_container_width=True)
 # COMPARAÇÃO FINAL
 # ===========================
 st.markdown("---")
-st.subheader("📊 Comparação: Impacto da Taxa de Performance")
+st.subheader("Comparação: Impacto da Taxa de Performance")
 
 col1, col2, col3 = st.columns(3)
 
